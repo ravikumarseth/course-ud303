@@ -17,8 +17,30 @@
 from http.server import HTTPServer, BaseHTTPRequestHandler
 from urllib.parse import parse_qs
 
+form_html ="""
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Message Board</title>
+</head>
+<body>
+  <form method="POST" action="http://localhost:8000/">
+    <textarea name="message"></textarea>
+    <br>
+    <button type="submit">Post it!</button>
+  </form>
+  </body>
+  <html>
+"""
+
 
 class MessageHandler(BaseHTTPRequestHandler):
+    def do_GET(self):
+        self.send_response(200)
+        self.send_header('Content-type', 'text/html; charset=utf-8')
+        self.end_headers()
+        self.wfile.write(form_html.encode())
+
     def do_POST(self):
         # How long was the message?
         length = int(self.headers.get('Content-length', 0))
@@ -31,7 +53,6 @@ class MessageHandler(BaseHTTPRequestHandler):
 
         # Send the "message" field back as the response.
         self.send_response(200)
-        self.send_header('Content-type', 'text/plain; charset=utf-8')
         self.end_headers()
         self.wfile.write(message.encode())
 
